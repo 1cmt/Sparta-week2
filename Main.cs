@@ -2,7 +2,6 @@ using System;
 
 namespace Dungeon 
 {
-    //시간부족으로 던전 구현은 실패했습니다 ㅠㅠ
     internal class Program
     {
         private int choice;
@@ -44,7 +43,7 @@ namespace Dungeon
                             myStatus.ShowStatus();
                             break;
                         case 2:
-                            myInventory.showInventory(myStatus);
+                            myInventory.ShowInventory(myStatus);
                             break;
                         case 3:
                             myShop.ShowShop(myStatus, myInventory);

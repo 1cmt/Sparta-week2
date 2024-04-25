@@ -8,9 +8,9 @@ namespace Dungeon
         public string Name { get; set; }
         public string Job { get; set; }
         public int AttackPower { get; set; }
-        public int ItemAttackPower { get; set; }
+        public Item? MyAttackItem { get; set; }
         public int DefensePower { get; set; }
-        public int ItemDefensePower { get; set; }
+        public Item? MyDefenseItem { get; set; }
         public int Hp { get; set; }
         public int Gold { get; set; }
 
@@ -20,40 +20,70 @@ namespace Dungeon
             Name = "Chad";
             Job = "전사";
             AttackPower = 10;
-            ItemAttackPower = 0;
+            MyAttackItem = null;
             DefensePower = 5;
-            ItemDefensePower = 0;
+            MyDefenseItem = null;
             Hp = 100;
             Gold = 1500;
         }
 
         public void WearItem(Item item)
         {
-            item.IsWear = true;
-            if (item.AttackPower != 0)
+            if (item is AttackItem)
             {
-                AttackPower += item.AttackPower;
-                ItemAttackPower += item.AttackPower;
+                if (MyAttackItem == null)
+                {
+                    AttackPower += item.GetPower();
+                    MyAttackItem = item;
+                    MyAttackItem.IsWear = true;
+                }
+                else
+                {
+                    //공격형 아이템이 있으면 기존 장비는 해제해야함
+                    UnWearItem(item);
+                    AttackPower += item.GetPower();
+                    MyAttackItem = item;
+                    MyAttackItem.IsWear = true;
+                }
             }
-            else
+            else if (item is DefenseItem)
             {
-                DefensePower += item.DefensePower;
-                ItemDefensePower += item.DefensePower;
+                if (MyDefenseItem == null)
+                {
+                    DefensePower += item.GetPower();
+                    MyDefenseItem = item;
+                    MyDefenseItem.IsWear = true;
+                }
+                else
+                {
+                    //공격형 아이템이 있으면 기존 장비는 해제해야함
+                    UnWearItem(item);
+                    DefensePower += item.GetPower();
+                    MyDefenseItem = item;
+                    MyDefenseItem.IsWear = true;
+                }
             }
         }
 
         public void UnWearItem(Item item)
         {
-            item.IsWear = false;
-            if (item.AttackPower != 0)
+            if (item is AttackItem)
             {
-                AttackPower -= item.AttackPower;
-                ItemAttackPower -= item.AttackPower;
+                if (MyAttackItem != null)
+                {
+                    MyAttackItem.IsWear = false;
+                    AttackPower -= MyAttackItem.GetPower();
+                    MyAttackItem = null;
+                }
             }
-            else
+            else if (item is DefenseItem)
             {
-                DefensePower -= item.DefensePower;
-                ItemDefensePower -= item.DefensePower;
+                if (MyDefenseItem != null)
+                {
+                    MyDefenseItem.IsWear = false;
+                    DefensePower -= MyDefenseItem.GetPower();
+                    MyDefenseItem = null;
+                }
             }
         }
 
@@ -97,11 +127,11 @@ namespace Dungeon
 
             Console.WriteLine($"{Name} ( {Job} )");
 
-            if (ItemAttackPower > 0) Console.WriteLine($"공격력 : {AttackPower} (+{ItemAttackPower})");
-            else Console.WriteLine($"공격력 : {AttackPower}");
+            if (MyAttackItem == null) Console.WriteLine($"공격력 : {AttackPower}");
+            else Console.WriteLine($"공격력 : {AttackPower} (+{MyAttackItem.GetPower()})");
 
-            if (ItemDefensePower > 0) Console.WriteLine($"방어력 : {DefensePower} (+{ItemDefensePower})");
-            else Console.WriteLine($"방어력 : {DefensePower}");
+            if (MyDefenseItem == null) Console.WriteLine($"방어력 : {DefensePower}");
+            else Console.WriteLine($"방어력 : {DefensePower} (+{MyDefenseItem.GetPower()})");
 
             Console.WriteLine($"체 력 : {Hp}");
             Console.WriteLine($"Gold : {Gold} G");

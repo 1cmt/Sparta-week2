@@ -12,14 +12,14 @@ namespace Dungeon
         {
             ItemArr = new Item[9];
             ItemArr[0] = new Item();
-            ItemArr[1] = new Item(1, "수련자 갑옷", 0, 5, "수련에 도움을 주는 갑옷입니다.", 1000);
-            ItemArr[2] = new Item(2, "무쇠 갑옷", 0, 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000);
-            ItemArr[3] = new Item(3, "스파르타의 갑옷", 0, 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
-            ItemArr[4] = new Item(4, "티타늄 갑옷", 0, 20, "티타늄으로 만들어진 매우 강력한 갑옷입니다.", 4000);
-            ItemArr[5] = new Item(5, "낡은 검", 2, 0, "쉽게 볼 수 있는 낡은 검 입니다.", 600);
-            ItemArr[6] = new Item(6, "청동 도끼", 5, 0, "어디선가 사용됐던거 같은 도끼입니다.", 1500);
-            ItemArr[7] = new Item(7, "스파르타의 창", 7, 0, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2000);
-            ItemArr[8] = new Item(8, "미지의 창", 15, 0, "미지에서 온 강력한 창입니다.", 3000);
+            ItemArr[1] = new DefenseItem(1, "수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000);
+            ItemArr[2] = new DefenseItem(2, "무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000);
+            ItemArr[3] = new DefenseItem(3, "스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
+            ItemArr[4] = new DefenseItem(4, "부실한 갑옷", 2, "티타늄으로 만들어진 매우 강력한 갑옷입니다.", 300);
+            ItemArr[5] = new AttackItem(5, "낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600);
+            ItemArr[6] = new AttackItem(6, "청동 도끼", 5, "어디선가 사용됐던거 같은 도끼입니다.", 1500);
+            ItemArr[7] = new AttackItem(7, "스파르타의 창", 7, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2000);
+            ItemArr[8] = new AttackItem(8, "부실한 창", 1, "미지에서 온 강력한 창입니다.", 200);
 
             IsSoldArr = new bool[9];
             SellableIdArr = new int[9];
@@ -39,7 +39,7 @@ namespace Dungeon
                     Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
                     Console.WriteLine("");
 
-                    PrintList(0, myStatus);
+                    PrintList(ShopEnum.ShowShop, myStatus);
 
                     Console.WriteLine("1. 아이템 구매");
                     Console.WriteLine("2. 아이템 판매");
@@ -77,7 +77,6 @@ namespace Dungeon
                     continue;
                 }
             }
-
         }
 
         void BuyItem(Status myStatus, Inventory myInventory)
@@ -91,7 +90,7 @@ namespace Dungeon
                 {
                     Console.WriteLine("");
                     Console.WriteLine("상점 - 아이템 구매");
-                    PrintList(1, myStatus);
+                    PrintList(ShopEnum.BuyItem, myStatus);
                     Console.WriteLine("0. 나가기");
                     Console.WriteLine("");
 
@@ -131,7 +130,7 @@ namespace Dungeon
                         {
                             Console.WriteLine("Gold 가 부족합니다.");
                             showList = false;
-                            return;
+                            continue;
                         }
                     }
                 }
@@ -155,7 +154,7 @@ namespace Dungeon
                 {
                     Console.WriteLine("");
                     Console.WriteLine("상점 - 아이템 판매");
-                    PrintList(2, myStatus);
+                    PrintList(ShopEnum.SellItem, myStatus);
                     Console.WriteLine("0. 나가기");
                     Console.WriteLine("");
                     Console.WriteLine("판매를 원하는 아이템 번호를 입력해주세요");
@@ -165,7 +164,7 @@ namespace Dungeon
                 if (int.TryParse(Console.ReadLine(), out choice))
                 {
                     if (choice == 0) return;
-                    else if (choice > myInventory.Count() || choice < 0)
+                    else if (choice >= myInventory.Count() || choice < 0) // >= 한 이유는 인덱스 맞추고자 인벤토리에 비어있는 아이템을 추가했기에
                     {
                         Console.WriteLine("잘못된 입력입니다");
                         showList = false;
@@ -176,7 +175,7 @@ namespace Dungeon
                         Console.WriteLine($"{ItemArr[SellableIdArr[choice]].Name}"); //<< 지울거임
                         int itemId = SellableIdArr[choice]; //판매가능한 아이템 Id를 보관하는 배열에서 Id를 가져옴
                         myStatus.Gold += ItemArr[itemId].SellPrice; //판매했으니 돈 추가
-                        
+
                         SellableIdArr[choice] = 0; //판매했으니 Id는 사용하지 않는 0로
                         IsSoldArr[itemId] = false; //판매했으니 이제 판매 불가해짐
                         myInventory.RemoveItem(itemId, myStatus);
@@ -193,7 +192,7 @@ namespace Dungeon
             }
         }
 
-        void PrintList(int methodNum, Status myStatus)
+        void PrintList(ShopEnum methodName, Status myStatus)
         {
             Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
             Console.WriteLine("");
@@ -206,33 +205,34 @@ namespace Dungeon
             int sellNum = 1;
             for (int i = 1; i < ItemArr.Length; i++)
             {
-                if (methodNum == 0 || methodNum == 1)
+                switch (methodName)
                 {
-                    Console.Write("- ");
-                    if (methodNum == 1) Console.Write($"{i} ");
+                    case ShopEnum.ShowShop:
+                    case ShopEnum.BuyItem:
+                        Console.Write("- ");
+                        if (methodName == ShopEnum.BuyItem) Console.Write($"{i} ");
 
-                    ItemArr[i].PrintInfo();
-                    if (!IsSoldArr[i]) Console.WriteLine($"| {ItemArr[i].Price} G");
-                    else Console.WriteLine("| 구매완료");
-                }
-                else //아이템 판매 메서드일 때
-                {
-                    if (IsSoldArr[i])
-                    {
-                        Console.Write($"- {sellNum} ");
                         ItemArr[i].PrintInfo();
-                        Console.WriteLine($"| {ItemArr[i].SellPrice} G");
-                        SellableIdArr[sellNum++] = i; //판매가능한 아이템의 Id(== i)를 판매가능 아이템 Id 보관 배열에 담는다.
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                        if (!IsSoldArr[i]) Console.WriteLine($"| {ItemArr[i].Price} G");
+                        else Console.WriteLine("| 구매완료");
+                        break;
+                    case ShopEnum.SellItem:
+                        if (IsSoldArr[i])
+                        {
+                            Console.Write($"- {sellNum} ");
+                            ItemArr[i].PrintInfo();
+                            Console.WriteLine($"| {ItemArr[i].SellPrice} G");
+                            SellableIdArr[sellNum++] = i; //판매가능한 아이템의 Id(== i)를 판매가능 아이템 Id 보관 배열에 담는다.
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                        break;
                 }
             }
-
             Console.WriteLine("");
         }
-
     }
+
 }

@@ -10,6 +10,7 @@ namespace Dungeon
         public Inventory()
         {
             ItemList = new List<Item>();
+            ItemList.Add(new Item());
         }
 
         public int Count()
@@ -22,24 +23,19 @@ namespace Dungeon
             ItemList.Add(item);
         }
 
-        public void RemoveItem(int id, Status myStatus)
+        public void RemoveItem(int itemId, Status myStatus) 
         {
-            for(int i = 0; i < ItemList.Count(); i++)
+            for (int i = 1; i < ItemList.Count; i++)
             {
-                if(ItemList[i].Id == id)
+                if(ItemList[i].Id == itemId)
                 {
-                    if(ItemList[i].IsWear) 
-                    {
-                        myStatus.UnWearItem(ItemList[i]);
-                    }
-
+                    if(ItemList[i].IsWear) myStatus.UnWearItem(ItemList[i]);
                     ItemList.RemoveAt(i);
-                    return;
                 }
             }
         }
 
-        public void showInventory(Status myStatus)
+        public void ShowInventory(Status myStatus)
         {
             bool showList = true;
             int choice = 0;
@@ -52,7 +48,7 @@ namespace Dungeon
                     Console.WriteLine("인벤토리");
                     Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다");
                     Console.WriteLine("");
-                    PrintList(0);
+                    PrintList(InventoryEnum.ShowInventory);
                     Console.WriteLine("1. 장착 관리");
                     Console.WriteLine("2. 나가기");
                     Console.WriteLine("");
@@ -100,7 +96,7 @@ namespace Dungeon
                     Console.WriteLine("인벤토리 - 장착관리");
                     Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다");
                     Console.WriteLine("");
-                    PrintList(1);
+                    PrintList(InventoryEnum.ManageWear);
                     Console.WriteLine("0. 나가기");
                     Console.WriteLine("");
                     Console.WriteLine("장착 혹은 장착 해제를 원하는 아이템의 번호를 적어주세요");
@@ -112,7 +108,6 @@ namespace Dungeon
                     if (choice == 0) return;
                     else if (choice > 0 && choice <= ItemList.Count)
                     {
-                        choice--;
                         if(!ItemList[choice].IsWear) myStatus.WearItem(ItemList[choice]);
                         else myStatus.UnWearItem(ItemList[choice]);
 
@@ -120,7 +115,6 @@ namespace Dungeon
                     }
                     else
                     {
-                        Console.WriteLine($"{ItemList.Count}");
                         Console.WriteLine("잘못된 입력입니다");
                         showList = false;
                         continue;
@@ -135,17 +129,17 @@ namespace Dungeon
             }
         }
 
-        void PrintList(int methodNum)
+        void PrintList(InventoryEnum methodName)
         {
             Console.WriteLine("[아이템 목록]");
 
-            for(int i = 0; i < ItemList.Count; i++)
+            for(int i = 1; i < ItemList.Count; i++)
             {
                 Console.Write("- ");
                 
-                if(methodNum == 1)  
+                if(methodName == InventoryEnum.ManageWear)  
                 {
-                    Console.Write($"{i + 1} ");
+                    Console.Write($"{i} ");
                 }
                 
                 if (ItemList[i].IsWear)
@@ -153,9 +147,9 @@ namespace Dungeon
                     Console.Write("[E]");
                 }
                 ItemList[i].PrintInfo();
+                Console.WriteLine("");
             }
 
-            Console.WriteLine("");
             Console.WriteLine("");
         }
     }
