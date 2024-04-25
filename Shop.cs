@@ -36,8 +36,6 @@ namespace Dungeon
                 {
                     Console.WriteLine("");
                     Console.WriteLine("상점");
-                    Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
-                    Console.WriteLine("");
 
                     PrintList(ShopEnum.ShowShop, myStatus);
 
@@ -172,7 +170,6 @@ namespace Dungeon
                     }
                     else //판매 로직
                     {
-                        Console.WriteLine($"{ItemArr[SellableIdArr[choice]].Name}"); //<< 지울거임
                         int itemId = SellableIdArr[choice]; //판매가능한 아이템 Id를 보관하는 배열에서 Id를 가져옴
                         myStatus.Gold += ItemArr[itemId].SellPrice; //판매했으니 돈 추가
 
