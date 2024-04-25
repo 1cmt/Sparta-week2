@@ -1,4 +1,5 @@
 using System;
+using Microsoft.VisualBasic;
 
 namespace Dungeon
 {
@@ -21,12 +22,17 @@ namespace Dungeon
             ItemList.Add(item);
         }
 
-        public void RemoveItem(int id)
+        public void RemoveItem(int id, Status myStatus)
         {
             for(int i = 0; i < ItemList.Count(); i++)
             {
                 if(ItemList[i].Id == id)
                 {
+                    if(ItemList[i].IsWear) 
+                    {
+                        myStatus.UnWearItem(ItemList[i]);
+                    }
+
                     ItemList.RemoveAt(i);
                     return;
                 }
@@ -104,7 +110,7 @@ namespace Dungeon
                 if (int.TryParse(Console.ReadLine(), out choice))
                 {
                     if (choice == 0) return;
-                    else if (choice > ItemList.Count || choice < 0)
+                    else if (choice > 0 && choice <= ItemList.Count)
                     {
                         choice--;
                         if(!ItemList[choice].IsWear) myStatus.WearItem(ItemList[choice]);
@@ -114,6 +120,7 @@ namespace Dungeon
                     }
                     else
                     {
+                        Console.WriteLine($"{ItemList.Count}");
                         Console.WriteLine("잘못된 입력입니다");
                         showList = false;
                         continue;

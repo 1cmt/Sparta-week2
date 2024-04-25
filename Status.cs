@@ -13,7 +13,6 @@ namespace Dungeon
         public int ItemDefensePower { get; set; }
         public int Hp { get; set; }
         public int Gold { get; set; }
-        public Item[] MyItem { get; set; }
 
         public Status()
         {
@@ -26,7 +25,6 @@ namespace Dungeon
             ItemDefensePower = 0;
             Hp = 100;
             Gold = 1500;
-            MyItem = new Item[2];
         }
 
         public void WearItem(Item item)
@@ -99,11 +97,11 @@ namespace Dungeon
 
             Console.WriteLine($"{Name} ( {Job} )");
 
-            if (ItemAttackPower > 0) Console.WriteLine($"{AttackPower} (+{ItemAttackPower})");
-            else Console.WriteLine($"{AttackPower}");
+            if (ItemAttackPower > 0) Console.WriteLine($"공격력 : {AttackPower} (+{ItemAttackPower})");
+            else Console.WriteLine($"공격력 : {AttackPower}");
 
-            if (ItemDefensePower > 0) Console.WriteLine($"{DefensePower} (+{ItemDefensePower})");
-            else Console.WriteLine($"{DefensePower}");
+            if (ItemDefensePower > 0) Console.WriteLine($"방어력 : {DefensePower} (+{ItemDefensePower})");
+            else Console.WriteLine($"방어력 : {DefensePower}");
 
             Console.WriteLine($"체 력 : {Hp}");
             Console.WriteLine($"Gold : {Gold} G");
